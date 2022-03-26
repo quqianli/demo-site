@@ -1,0 +1,34 @@
+# 工作流的名称
+name: Build and Deploy
+# 工作流触发条件，这里是git push命令发生时
+on: [push]
+# 工作流运行的作业配置
+jobs:
+  # 作业名称
+  build-and-deploy:
+    # 运行在最新的ubuntu系统中
+    runs-on: ubuntu-latest
+    # 作业步骤
+    steps:
+      # 步骤1，checkout代码
+      - name: Checkout
+        # 使用checkout插件
+        uses: actions/checkout@v3
+        
+      # 步骤2，安装和打包
+      - name: Install and Build
+        # 运行的命令，这里包含两条，npm i 和npm run build
+        run: |
+          npm i
+          npm run build
+          
+      # 步骤3，部署静态资源
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          # 部署到的分支，这里是GitHub Pages默认分支gh-pages.
+          branch: gh-pages
+          # 要发布的文件夹，这里配置为打包的目标文件夹dist.
+          folder: dist
+          # 配置个人令牌，设置为本仓库添加到Secrets的DEPLOY_KEY
+          token: ${{ secrets.DEPLOY_KEY }}
